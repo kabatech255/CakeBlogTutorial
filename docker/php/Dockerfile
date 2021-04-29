@@ -1,0 +1,22 @@
+FROM php:7.3.0RC6-fpm-alpine3.8
+# timezone
+ARG TZ
+WORKDIR /var/www/cake
+COPY ./docker/php/php.ini /usr/local/etc/php/
+COPY ./cake/ /var/www/cake/
+
+RUN apk upgrade --update && apk add --no-cache \
+  mysql-client coreutils freetype-dev jpeg-dev libjpeg-turbo-dev libpng-dev libmcrypt-dev \
+  git vim unzip tzdata \
+  libltdl icu-dev autoconf make && \
+  docker-php-ext-install pdo_mysql mysqli mbstring && \
+  docker-php-ext-install -j$(nproc) iconv && \
+  docker-php-ext-configure gd \
+  --with-freetype-dir=/usr/include/ \
+  --with-jpeg-dir=/usr/include/ && \
+  docker-php-ext-install -j$(nproc) gd intl && \
+  cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
+  apk del tzdata && \
+  rm -rf /var/cache/apk/*
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
