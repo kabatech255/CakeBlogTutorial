@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -24,62 +25,80 @@ use Cake\Validation\Validator;
  */
 class ArticlesTable extends Table
 {
-    /**
-     * Initialize method
-     *
-     * @param array $config The configuration for the Table.
-     * @return void
-     */
-    public function initialize(array $config)
-    {
-        parent::initialize($config);
+  /**
+   * Initialize method
+   *
+   * @param array $config The configuration for the Table.
+   * @return void
+   */
+  public function initialize(array $config)
+  {
+    parent::initialize($config);
 
-        $this->setTable('articles');
-        $this->setDisplayField('title');
-        $this->setPrimaryKey('id');
+    $this->setTable('articles');
+    $this->setDisplayField('title');
+    $this->setPrimaryKey('id');
 
-        $this->addBehavior('Timestamp');
+    $this->addBehavior('Timestamp');
 //
-        $this->hasMany('Comments');
-    }
+    $this->hasMany('Comments', [
+      'foreignKey' => 'article_id',
+    ]);
+    $this->belongsTo('Categories', [
+      'foreignKey' => 'category_id',
+    ]);
+    $this->belongsTo('Users', [
+      'foreignKey' => 'user_id',
+    ]);
+  }
 
-    /**
-     * Default validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
-    public function validationDefault(Validator $validator)
-    {
-        $validator
-            ->integer('id')
-            ->allowEmptyString('id', null, 'create');
+  /**
+   * Default validation rules.
+   *
+   * @param \Cake\Validation\Validator $validator Validator instance.
+   * @return \Cake\Validation\Validator
+   */
+  public function validationDefault(Validator $validator)
+  {
+    $validator
+      ->integer('id')
+      ->allowEmptyString('id', null, 'create');
 
-        $validator
-            ->scalar('title')
-            ->maxLength('title', 255)
-            ->requirePresence('title', 'create')
-            ->notEmptyString('title');
+    $validator
+      ->scalar('title')
+      ->maxLength('title', 255)
+      ->requirePresence('title', 'create')
+      ->notEmptyString('title');
 
-        $validator
-            ->scalar('body')
-            ->requirePresence('body', 'create')
-            ->notEmptyString('body');
+    $validator
+      ->scalar('body')
+      ->requirePresence('body', 'create')
+      ->notEmptyString('body');
 
-        return $validator;
-    }
+    return $validator;
+  }
 
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
-    public function buildRules(RulesChecker $rules)
-    {
+  /**
+   * Returns a rules checker object that will be used for validating
+   * application integrity.
+   *
+   * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+   * @return \Cake\ORM\RulesChecker
+   */
+  public function buildRules(RulesChecker $rules)
+  {
 //        $rules->add($rules->existsIn(['category_id'], 'Categories'));
 
-        return $rules;
-    }
+    return $rules;
+  }
+
+  /**
+   * @param $articleId
+   * @param $userId
+   * @return bool
+   */
+  public function isOwnedBy($articleId, $userId)
+  {
+    return $this->exists(['id' => $articleId, 'user_id' => $userId]);
+  }
 }

@@ -13,6 +13,20 @@ use App\Controller\AppController;
  */
 class CommentsController extends AppController
 {
+  public function isAuthorized($user)
+  {
+    if ($this->request->getParam('action') === 'add') {
+      return true;
+    }
+
+    if (in_array($this->request->getParam('action'), ['edit', 'delete'])) {
+      $articleId = (int)$this->request->getParam('pass')[0];
+      if ($this->Comments->isOwnedBy($articleId, $user['id'])) {
+        return true;
+      }
+    }
+    return parent::isAuthorized($user);
+  }
   /**
    * Index method
    *
@@ -29,13 +43,13 @@ class CommentsController extends AppController
   }
 
   /**
-   * View method
+   * Show method
    *
    * @param string|null $id Comment id.
    * @return \Cake\Http\Response|null
    * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
    */
-  public function view($id = null)
+  public function show($id = null)
   {
     $comment = $this->Comments->get($id, [
       'contain' => ['Articles'],
@@ -55,6 +69,7 @@ class CommentsController extends AppController
     $comment = $this->Comments->newEntity();
     if ($this->request->is('post')) {
       $comment = $this->Comments->patchEntity($comment, $this->request->getData());
+      $comment->user_id = $this->Auth->user('id');
       if ($this->Comments->save($comment)) {
         $this->Flash->success(__('The comment has been saved.'));
       } else {

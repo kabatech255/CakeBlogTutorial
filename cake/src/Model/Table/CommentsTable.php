@@ -45,6 +45,12 @@ class CommentsTable extends Table
       'foreignKey' => 'article_id',
       'joinType' => 'INNER',
     ]);
+
+    $this->belongsTo('Users', [
+      'foreignKey' => 'user_id',
+      'joinType' => 'INNER',
+      'propertyName' => 'commentedBy'
+    ]);
   }
 
   /**
@@ -79,5 +85,10 @@ class CommentsTable extends Table
     $rules->add($rules->existsIn(['article_id'], 'Articles'));
 
     return $rules;
+  }
+
+  public function isOwnedBy($articleId, $userId)
+  {
+    return $this->exists(['id' => $articleId, 'user_id' => $userId]);
   }
 }

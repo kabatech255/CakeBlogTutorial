@@ -14,6 +14,21 @@ use Cake\Datasource\ConnectionManager;
  */
 class ArticlesController extends AppController
 {
+  public function isAuthorized($user)
+  {
+    if ($this->request->getParam('action') === 'add') {
+      return true;
+    }
+
+    if (in_array($this->request->getParam('action'), ['edit', 'delete'])) {
+      $articleId = (int)$this->request->getParam('pass')[0];
+      if ($this->Articles->isOwnedBy($articleId, $user['id'])) {
+        return true;
+      }
+    }
+    return parent::isAuthorized($user);
+  }
+
   /**
    * Index method
    *
@@ -25,7 +40,6 @@ class ArticlesController extends AppController
       'contain' => ['Comments'],
     ];
     $articles = $this->paginate($this->Articles);
-
     $this->set(compact('articles'));
   }
 
@@ -58,6 +72,10 @@ class ArticlesController extends AppController
     $article = $this->Articles->newEntity();
     if ($this->request->is('post')) {
       $article = $this->Articles->patchEntity($article, $this->request->getData());
+      $article->user_id = $this->Auth->user('id');
+      // ↑の2行は、以下のようにも書ける
+      //$newData = ['user_id' => $this->Auth->user('id')];
+      //$article = $this->Articles->patchEntity($article, $newData);
       if ($this->Articles->save($article)) {
         $this->Flash->success(__('The article has been saved.'));
         return $this->redirect(['action' => 'index']);
@@ -65,9 +83,8 @@ class ArticlesController extends AppController
         $this->Flash->error(__('The article could not be saved. Please, try again.'));
       }
     }
-//    $categories = $this->Articles->Categories->find('list', ['limit' => 200]);
-//    $this->set(compact('article', 'categories'));
-    $this->set(compact('article'));
+    $categories = $this->Articles->Categories->find('treeList');
+    $this->set(compact(['article', 'categories']));
   }
 
   /**
