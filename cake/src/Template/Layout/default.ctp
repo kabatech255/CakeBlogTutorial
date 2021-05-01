@@ -46,11 +46,11 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
       <li><a target="_blank" href="https://book.cakephp.org/3/">Documentation</a></li>
       <li><a target="_blank" href="https://api.cakephp.org/3.0/">API</a></li>
       <?php if (!empty($this->Auth->user('username') ?? '')): ?>
-      <li><a href="/users/logout">ログアウト</a></li>
+      <li><?= $this->Html->link('ログアウト', ['controller' => 'users', 'action' => 'logout']); ?></li>
       <li><a><?= $this->Auth->user('username'); ?></a></li>
       <?php else: ?>
-        <li><a href="/users/login">ログイン</a></li>
-        <li><a href="/users/register">新規登録</a></li>
+        <li><?= $this->Html->link('ログイン', ['controller' => 'users', 'action' => 'login']); ?></li>
+        <li><?= $this->Html->link('新規登録', ['controller' => 'users', 'action' => 'register']); ?></li>
       <?php endif; ?>
     </ul>
   </div>

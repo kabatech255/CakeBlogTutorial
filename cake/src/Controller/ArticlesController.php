@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
+use Cake\ORM\TableRegistry;
 
 /**
  * Articles Controller
@@ -37,7 +38,7 @@ class ArticlesController extends AppController
   public function index()
   {
     $this->paginate = [
-      'contain' => ['Comments'],
+      'contain' => ['Comments', 'Categories'],
     ];
     $articles = $this->paginate($this->Articles);
     $this->set(compact('articles'));
@@ -71,9 +72,9 @@ class ArticlesController extends AppController
   {
     $article = $this->Articles->newEntity();
     if ($this->request->is('post')) {
-      $article = $this->Articles->patchEntity($article, $this->request->getData());
-      $article->user_id = $this->Auth->user('id');
-      // ↑の2行は、以下のようにも書ける
+      $data = $this->request->getData();
+      $article = $this->Articles->patchEntity($article, $data);
+      // ↑の1行は、以下のようにも書ける
       //$newData = ['user_id' => $this->Auth->user('id')];
       //$article = $this->Articles->patchEntity($article, $newData);
       if ($this->Articles->save($article)) {
@@ -83,6 +84,7 @@ class ArticlesController extends AppController
         $this->Flash->error(__('The article could not be saved. Please, try again.'));
       }
     }
+    $article = $this->Articles->newEntity();
     $categories = $this->Articles->Categories->find('treeList');
     $this->set(compact(['article', 'categories']));
   }
@@ -97,7 +99,7 @@ class ArticlesController extends AppController
   public function edit($id = null)
   {
     $article = $this->Articles->get($id, [
-      'contain' => [],
+      'contain' => ['Categories'],
     ]);
     if ($this->request->is(['patch', 'post', 'put'])) {
       $article = $this->Articles->patchEntity($article, $this->request->getData());
@@ -108,9 +110,8 @@ class ArticlesController extends AppController
       }
       $this->Flash->error(__('The article could not be saved. Please, try again.'));
     }
-//    $categories = $this->Articles->Categories->find('list', ['limit' => 200]);
-//    $this->set(compact('article', 'categories'));
-    $this->set(compact('article'));
+    $categories = $this->Articles->Categories->find('treeList');
+    $this->set(compact(['article', 'categories']));
   }
 
   /**

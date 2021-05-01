@@ -44,8 +44,9 @@ class ArticlesTable extends Table
     $this->hasMany('Comments', [
       'foreignKey' => 'article_id',
     ]);
-    $this->belongsTo('Categories', [
-      'foreignKey' => 'category_id',
+    $this->belongsToMany('Categories', [
+      'joinTable' => 'article_categories',
+      'foreignKey' => 'article_id',
     ]);
     $this->belongsTo('Users', [
       'foreignKey' => 'user_id',

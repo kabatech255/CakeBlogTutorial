@@ -50,14 +50,13 @@ class AppController extends Controller
       'authorize' => ['Controller'],
       // 認証後のリダイレクト先
       'loginRedirect' => [
-        'url' => 'Articles',
+        'controller' => 'Articles',
         'action' => 'index'
       ],
       // ログアウト後のリダイレクト先
       'logoutRedirect' => [
-        'controller' => 'Pages',
-        'action' => 'display',
-        'home'
+        'controller' => 'Users',
+        'action' => 'login'
       ]
     ]);
     /*

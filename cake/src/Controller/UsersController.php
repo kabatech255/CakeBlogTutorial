@@ -28,7 +28,7 @@ class UsersController extends AppController
         $this->Auth->setUser($user);
         return $this->redirect($this->Auth->redirectUrl());
       }
-      $this->Flash->error(__('Invalid username or password, try again'));
+      $this->Flash->error(__('ログインIDまたはパスワードが一致しませんでした'));
     }
   }
 
