@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
-use Cake\ORM\TableRegistry;
 
 /**
  * Articles Controller
@@ -38,9 +37,21 @@ class ArticlesController extends AppController
   public function index()
   {
     $this->paginate = [
-      'contain' => ['Comments', 'Categories'],
+      'contain' => ['Categories', 'Users'],
     ];
-    $articles = $this->paginate($this->Articles);
+    if($categoryId = (int)$this->request->getQuery('category')){
+      // クエリパラメータ"category"がある場合
+      $query = $this->Articles->find('category', [
+        'categoryId' => $categoryId
+      ]);
+      $articles = $this->paginate($query);
+      $category = $this->loadModel('Categories')->get($categoryId);
+      $this->set(compact('category'));
+    } else {
+      // クエリパラメータ"category"がない場合
+      $articles = $this->paginate($this->Articles);
+    }
+
     $this->set(compact('articles'));
   }
 

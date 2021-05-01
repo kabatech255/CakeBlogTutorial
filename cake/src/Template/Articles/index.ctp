@@ -1,10 +1,21 @@
 <h1>Blog articles <button><?= $this->Html->link('Add', ['action' => 'add']) ?></button></h1>
+<?php if (!empty($category ?? '')): ?>
+<div>
+  <p>
+    <span>タグ名「<?= $category->name ?>」で絞り込み中</span>
+    <?= $this->Html->link('絞り込みをクリア', [
+      'action' => 'index'
+    ]); ?>
+  </p>
+</div>
+<?php endif; ?>
+
 <table>
   <tr>
-    <th class="short">Id</th>
-    <th>Title</th>
-    <th>Categories</th>
-    <th>Created</th>
+    <th>投稿者</th>
+    <th>タイトル</th>
+    <th>カテゴリー</th>
+    <th>作成日</th>
     <th class="short">編集</th>
     <th class="short">削除</th>
   </tr>
@@ -12,14 +23,19 @@
   <!-- ここから、$articles のクエリーオブジェクトをループして、投稿記事の情報を表示 -->
   <?php foreach ($articles as $article): ?>
     <tr>
-      <td><?= $article->id ?></td>
+      <td><?= $article->user->username ?></td>
       <td>
         <?= $this->Html->link($article->title, ['action' => 'show', $article->id]) ?>
       </td>
       <?php if(count($article->categories) > 0): ?>
       <td>
         <?php foreach($article->categories as $category): ?>
-          <span><?= $category->name; ?></span>
+          <?= $this->Html->link($category->name, [
+              'action' => 'index',
+              '?' => [
+                'category' => $category->id
+              ]
+            ]); ?>
         <?php endforeach; ?>
       </td>
       <?php else: ?>

@@ -102,4 +102,18 @@ class ArticlesTable extends Table
   {
     return $this->exists(['id' => $articleId, 'user_id' => $userId]);
   }
+
+  /**
+   * @param Query $query
+   * @param array $options
+   * @return Query
+   */
+  public function findCategory(Query $query, array $options)
+  {
+    $categoryId = $options['categoryId'];
+    return $this->find()->matching('Categories', function($q) use ($categoryId) {
+      return $q->where([ 'Categories.id' => $categoryId ]);
+    });
+  }
+
 }
