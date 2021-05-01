@@ -9,4 +9,6 @@
     RewriteRule    ^(\.well-known/.*)$ $1 [L]
     RewriteRule    ^$    webroot/    [L]
     RewriteRule    (.*) webroot/$1    [L]
+    RewriteCond %{THE_REQUEST} ^.*/index\.php
+    RewriteRule (.*)index\.php$ http://%{HTTP_HOST}/$1 [R=301,L]
 </IfModule>

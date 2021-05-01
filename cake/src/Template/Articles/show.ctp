@@ -1,4 +1,7 @@
-<h1><?= $article->title; ?></h1>
+<h1>
+  <span><?= $article->title; ?></span>
+  <small><?= $this->Html->link('編集', ['action' => 'edit', $article->id]); ?></small>
+</h1>
 <p><?= nl2br($article->body); ?></p>
 
 <h2>Comments</h2>

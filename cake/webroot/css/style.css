@@ -535,3 +535,6 @@ table td {
   vertical-align: top;
   word-break: break-all;
 }
+table th.short {
+  width: 65px;
+}

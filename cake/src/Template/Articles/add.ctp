@@ -2,8 +2,11 @@
 <?php
 echo $this->Form->create($article);
 echo $this->Form->control('title');
+echo $this->Form->input('user_id', ['type' => 'hidden', 'value' => $this->Auth->user('id')]);
 echo $this->Form->control('body', ['rows' => '3']);
-echo $this->Form->control('category_id');
+echo $this->Form->select('categories._ids', $categories, [
+  'multiple' => 'checkbox',
+]);
 echo $this->Form->button(__('Save Article'));
 echo $this->Form->end();
 ?>

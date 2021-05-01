@@ -4,18 +4,18 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Article Entity
+ * ArticleCategory Entity
  *
  * @property int $id
- * @property string $title
- * @property string $body
+ * @property int $article_id
  * @property int $category_id
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
+ * @property \App\Model\Entity\Article $article
  * @property \App\Model\Entity\Category $category
  */
-class Article extends Entity
+class ArticleCategory extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -27,12 +27,11 @@ class Article extends Entity
      * @var array
      */
     protected $_accessible = [
-        'title' => true,
-        'body' => true,
+        'article_id' => true,
         'category_id' => true,
-        'user_id' => true,
         'created' => true,
         'modified' => true,
-        'categories' => true,
+        'article' => true,
+        'category' => true,
     ];
 }
