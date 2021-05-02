@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -22,67 +23,81 @@ use Cake\Validation\Validator;
  */
 class UsersTable extends Table
 {
-    /**
-     * Initialize method
-     *
-     * @param array $config The configuration for the Table.
-     * @return void
-     */
-    public function initialize(array $config)
-    {
-        parent::initialize($config);
+  /**
+   * Initialize method
+   *
+   * @param array $config The configuration for the Table.
+   * @return void
+   */
+  public function initialize(array $config)
+  {
+    parent::initialize($config);
 
-        $this->setTable('users');
-        $this->setDisplayField('id');
-        $this->setPrimaryKey('id');
+    $this->setTable('users');
+    $this->setDisplayField('id');
+    $this->setPrimaryKey('id');
 
-        $this->addBehavior('Timestamp');
-    }
+    $this->addBehavior('Timestamp');
 
-    /**
-     * Default validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
-    public function validationDefault(Validator $validator)
-    {
-        $validator
-            ->integer('id')
-            ->allowEmptyString('id', null, 'create');
+    $this->belongsToMany('FollowMembers', [
+      'className' => 'Users',
+      'joinTable' => 'follows',
+      'foreignKey' => 'follow_id',
+      'targetForeignKey' => 'follower_id',
+    ])->setProperty('follows');
 
-        $validator
-            ->scalar('username')
-            ->maxLength('username', 30)
-            ->requirePresence('username', 'create')
-            ->notEmptyString('username');
+    $this->belongsToMany('FollowerMembers', [
+      'className' => 'Users',
+      'joinTable' => 'follows',
+      'foreignKey' => 'follower_id',
+      'targetForeignKey' => 'follow_id',
+    ])->setProperty('followers');
+  }
 
-        $validator
-            ->scalar('password')
-            ->maxLength('password', 255)
-            ->requirePresence('password', 'create')
-            ->notEmptyString('password');
+  /**
+   * Default validation rules.
+   *
+   * @param \Cake\Validation\Validator $validator Validator instance.
+   * @return \Cake\Validation\Validator
+   */
+  public function validationDefault(Validator $validator)
+  {
+    $validator
+      ->integer('id')
+      ->allowEmptyString('id', null, 'create');
 
-        $validator
-            ->scalar('role')
-            ->maxLength('role', 20)
-            ->requirePresence('role', 'create')
-            ->notEmptyString('role');
+    $validator
+      ->scalar('username')
+      ->maxLength('username', 30)
+      ->requirePresence('username', 'create')
+      ->notEmptyString('username');
 
-        return $validator;
-    }
+    $validator
+      ->scalar('password')
+      ->maxLength('password', 255)
+      ->requirePresence('password', 'create')
+      ->notEmptyString('password');
 
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
-    public function buildRules(RulesChecker $rules)
-    {
-        $rules->add($rules->isUnique(['username']));
+    $validator
+      ->scalar('role')
+      ->maxLength('role', 20)
+      ->requirePresence('role', 'create')
+      ->notEmptyString('role');
 
-        return $rules;
-    }
+    return $validator;
+  }
+
+  /**
+   * Returns a rules checker object that will be used for validating
+   * application integrity.
+   *
+   * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+   * @return \Cake\ORM\RulesChecker
+   */
+  public function buildRules(RulesChecker $rules)
+  {
+    $rules->add($rules->isUnique(['username']));
+
+    return $rules;
+  }
 }

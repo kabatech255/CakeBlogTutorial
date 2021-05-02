@@ -1,44 +1,52 @@
-<h1><?= $article->title; ?></h1>
-<p><?= nl2br($article->body); ?></p>
-
-<h2>Comments</h2>
-<!--コメント一覧-->
-<?php if( count($article->comments) > 0 ): ?>
-<ul>
-  <?php foreach($article->comments as $comment): ?>
-  <li>
-    <span><?= $comment->body; ?></span>
-    <?php
-    /**
-     * 第1引数: リンクのテキスト
-     * 第2引数: $url
-     * 第3引数: $options(今回は'confirm'と'data'を配列形式で指定)
-     */
-    echo $this->Form->postLink(
-      '削除',
-      ['controller' => 'comments', 'action' => 'delete', $comment->id],
+<h1>
+  <span><?= $user->username; ?></span>
+  <!-- ↓ フォロー（フォロー解除）リンク -->
+  <?php
+    $action = in_array($this->Auth->user('id'), $followerIds) ? 'unfollow' : 'follow';
+    $string = in_array($this->Auth->user('id'), $followerIds) ? 'フォロー解除' : 'フォロー';
+    echo $this->Form->postLink($string,
+      ['action' => $action, $user->id],
       [
-        'confirm' => '一度削除すると元に戻せません。削除してよろしいですか?',
         'data' => [
-          'article_id' => $article->id,
-        ],
+          'followers._ids' => $followerIds
+        ]
       ]
     );
-    ?>
+  ?>
+</h1>
+
+<h2 class="flex">
+  <span>フォロー:</span>
+  <span><?= count($user->follows); ?></span>
+</h2>
+<!--フォロー一覧-->
+<?php if( count($user->follows) > 0 ): ?>
+<ul>
+  <?php foreach($user->follows as $follow): ?>
+  <li>
+    <?= $this->Html->link($follow->username, [ 'action' => 'show', $follow->id ]); ?>
   </li>
   <?php endforeach; ?>
 </ul>
 <?php else: ?>
-<p>コメントはありません。</p>
+<p>フォロー中のユーザーはいません。</p>
 <?php endif; ?>
 
-<!--コメントフォーム-->
-<?php
-echo $this->Form->create('Comment', ['url' => ['controller' => 'comments', 'action' => 'add']]);
-echo $this->Form->input('article_id', ['type' => 'hidden', 'value' => $article->id]);
-echo $this->Form->input('body', ['rows' => '1', 'placeholder' => 'コメント']);
-echo $this->Form->button(__('Save Comment'));
-echo $this->Form->end();
-?>
+<h2 class="flex">
+  <span>フォロワー:</span>
+  <span><?= count($user->followers); ?></span>
+</h2>
+<!--フォロワー一覧-->
+<?php if( count($user->followers) > 0 ): ?>
+  <ul>
+    <?php foreach($user->followers as $follower): ?>
+      <li>
+        <?= $this->Html->link($follower->username, [ 'action' => 'show', $follower->id ]); ?>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+<?php else: ?>
+  <p>フォロワーはいません。</p>
+<?php endif; ?>
 
 <a onclick="history.back()">BACK</a>

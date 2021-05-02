@@ -35,5 +35,7 @@ class Article extends Entity
     'created' => true,
     'modified' => true,
     'categories' => true,
+    'likes' => true,
+    'authors' => true,
   ];
 }

@@ -2,7 +2,27 @@
   <span><?= $article->title; ?></span>
   <small><?= $this->Html->link('編集', ['action' => 'edit', $article->id]); ?></small>
 </h1>
+<p>投稿者:
+  <?= $this->Html->link($article->author->username, [
+        'controller' => 'users', 'action' => 'show', $article->author->id
+      ]);
+  ?>
+</p>
 <p><?= nl2br($article->body); ?></p>
+
+<p>
+<?php
+$action = in_array($this->Auth->user('id'), $likeList) ? 'dislike' : 'like';
+echo $this->Form->postLink('いいね',
+  ['action' => $action, $article->id],
+  [
+    'data' => [
+      'likes._ids' => $likeList
+    ]
+  ]
+)
+?>の数：<strong><?= count($article->likes); ?></strong>
+</p>
 
 <h2>Comments</h2>
 <!--コメント一覧-->
