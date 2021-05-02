@@ -3,19 +3,20 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-use Cake\Auth\DefaultPasswordHasher;
 
 /**
- * User Entity
+ * Follow Entity
  *
  * @property int $id
- * @property string $username
- * @property string $password
- * @property string $role
+ * @property int $follow_id
+ * @property int $follower_id
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
+ *
+ * @property \App\Model\Entity\Follow $follow
+ * @property \App\Model\Entity\Follow $follower
  */
-class User extends Entity
+class Follow extends Entity
 {
   /**
    * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -27,25 +28,11 @@ class User extends Entity
    * @var array
    */
   protected $_accessible = [
-    'id' => false,
-    'follows' => true,
-    'followers' => true,
-    '*' => true,
-  ];
-
-  protected function _setPassword($password)
-  {
-    if (mb_strlen($password) > 0) {
-      return (new DefaultPasswordHasher)->hash($password);
-    }
-  }
-
-  /**
-   * Fields that are excluded from JSON versions of the entity.
-   *
-   * @var array
-   */
-  protected $_hidden = [
-    'password',
+    'follow_id' => true,
+    'follower_id' => true,
+    'created' => true,
+    'modified' => true,
+    'follow' => true,
+    'follower' => true,
   ];
 }

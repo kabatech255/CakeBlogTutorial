@@ -23,7 +23,7 @@
   <!-- ここから、$articles のクエリーオブジェクトをループして、投稿記事の情報を表示 -->
   <?php foreach ($articles as $article): ?>
     <tr>
-      <td><?= $article->user->username ?></td>
+      <td><?= $this->Html->link($article->author->username, ['controller' => 'users', 'action' => 'show', $article->author->id]); ?></td>
       <td>
         <?= $this->Html->link($article->title, ['action' => 'show', $article->id]) ?>
       </td>

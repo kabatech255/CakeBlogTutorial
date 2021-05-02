@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
+use Cake\Collection\Collection;
 
 /**
  * Articles Controller
@@ -16,7 +17,7 @@ class ArticlesController extends AppController
 {
   public function isAuthorized($user)
   {
-    if ($this->request->getParam('action') === 'add') {
+    if (in_array($this->request->getParam('action'), ['add', 'like', 'dislike'])) {
       return true;
     }
 
@@ -37,7 +38,7 @@ class ArticlesController extends AppController
   public function index()
   {
     $this->paginate = [
-      'contain' => ['Categories', 'Users'],
+      'contain' => ['Categories', 'LikeUsers', 'Authors'],
     ];
     if($categoryId = (int)$this->request->getQuery('category')){
       // クエリパラメータ"category"がある場合
@@ -68,10 +69,12 @@ class ArticlesController extends AppController
 //    ConnectionManager::config('default', ['url' => $dsn]);
     $connection = ConnectionManager::get('default');
     $article = $this->Articles->get($id, [
-      'contain' => ['Comments']
+      'contain' => ['Comments', 'Authors', 'LikeUsers']
     ]);
+    $c = new Collection($article->likes);
+    $likeList = $c->extract('id')->toList();
     $comment = $this->Articles->Comments->newEntity();
-    $this->set(compact(['connection', 'article', 'comment']));
+    $this->set(compact(['connection', 'article', 'likeList', 'comment']));
   }
 
   /**
@@ -143,5 +146,49 @@ class ArticlesController extends AppController
     }
 
     return $this->redirect(['action' => 'index']);
+  }
+
+  public function like($id = null)
+  {
+    $article = $this->Articles->get($id, [
+      'contain' => ['Categories', 'LikeUsers'],
+    ]);
+    if ($this->request->is(['patch', 'post', 'put'])) {
+      $data = $this->request->getData();
+      $data['likes']['_ids'] = empty($data['likes']['_ids']) ? [$this->Auth->user('id')] : array_merge($data['likes']['_ids'], [$this->Auth->user('id')]);
+
+      $article = $this->Articles->patchEntity($article, $data, [
+        'associated' => ['LikeUsers'],
+      ]);
+      if ($this->Articles->save($article)) {
+        $this->Flash->success(__('いいねをつけました。'));
+      } else {
+        $this->Flash->error(__('The like could not be saved. Please, try again.'));
+      }
+      return $this->redirect(['action' => 'show', $article->id]);
+    }
+  }
+
+  public function dislike($id = null)
+  {
+    $article = $this->Articles->get($id, [
+      'contain' => ['Categories', 'LikeUsers'],
+    ]);
+    if ($this->request->is(['patch', 'post', 'put'])) {
+
+      $data = $this->request->getData();
+      $index = array_search($this->Auth->user('id'), $data['likes']['_ids']);
+      array_splice($data['likes']['_ids'], $index, 1);
+
+      $article = $this->Articles->patchEntity($article, $data, [
+        'associated' => ['LikeUsers'],
+      ]);
+      if ($this->Articles->save($article)) {
+        $this->Flash->success(__('いいねを解除しました'));
+      } else {
+        $this->Flash->error(__('The like could not be saved. Please, try again.'));
+      }
+      return $this->redirect(['action' => 'show', $article->id]);
+    }
   }
 }

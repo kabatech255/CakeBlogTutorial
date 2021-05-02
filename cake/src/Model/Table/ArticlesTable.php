@@ -48,7 +48,17 @@ class ArticlesTable extends Table
       'joinTable' => 'article_categories',
       'foreignKey' => 'article_id',
     ]);
-    $this->belongsTo('Users', [
+
+    $this->belongsToMany('LikeUsers', [
+      'className' => 'Users',
+      'joinTable' => 'likes',
+      'foreignKey' => 'article_id',
+      'targetForeignKey' => 'user_id'
+    ])->setProperty('likes');
+
+    $this->belongsTo('Authors', [
+      'className' => 'Users',
+      'joinTable' => 'users',
       'foreignKey' => 'user_id',
     ]);
   }
