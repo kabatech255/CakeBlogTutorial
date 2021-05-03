@@ -1,0 +1,1 @@
+2021/05/03 20:58:12 [error] 9#9: *39 directory index of "/var/www/cake/webroot/img/app/" is forbidden, client: 172.18.0.1, server: cake-blog.org, request: "GET /img/app/ HTTP/1.1", host: "localhost:10080", referrer: "http://localhost:10080/users/edit"

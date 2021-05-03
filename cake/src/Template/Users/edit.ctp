@@ -9,4 +9,4 @@ echo $this->Form->button(__('保存'));
 echo $this->Form->end();
 ?>
 
-<img src="<?= "/img/app/{$user->file_name}"; ?>" alt="<?= "face_for_{$user->username}"; ?>">
+<img src="<?= sprintf('%s/%s', 'https://asset.risk-exam.site/tmp', $user->file_name); ?>" alt="<?= "face_for_{$user->username}"; ?>">
