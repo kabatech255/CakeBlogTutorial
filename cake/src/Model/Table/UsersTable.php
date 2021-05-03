@@ -73,6 +73,11 @@ class UsersTable extends Table
       ->notEmptyString('username');
 
     $validator
+      ->scalar('file_name')
+      ->maxLength('file_name', 255)
+      ->notEmptyString('file_name');
+
+    $validator
       ->scalar('password')
       ->maxLength('password', 255)
       ->requirePresence('password', 'create')

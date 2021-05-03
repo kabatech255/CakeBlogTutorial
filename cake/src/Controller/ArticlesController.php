@@ -30,6 +30,18 @@ class ArticlesController extends AppController
     return parent::isAuthorized($user);
   }
 
+  public function initialize()
+  {
+    parent::initialize();
+    $this->paginate = [
+      'limit' => 5,
+      'order' => [
+        'id' => 'DESC'
+      ],
+      'contain' => ['Categories', 'LikeUsers', 'Authors'],
+    ];
+  }
+
   /**
    * Index method
    *
@@ -37,9 +49,6 @@ class ArticlesController extends AppController
    */
   public function index()
   {
-    $this->paginate = [
-      'contain' => ['Categories', 'LikeUsers', 'Authors'],
-    ];
     if($categoryId = (int)$this->request->getQuery('category')){
       // クエリパラメータ"category"がある場合
       $query = $this->Articles->find('category', [
@@ -53,7 +62,9 @@ class ArticlesController extends AppController
       $articles = $this->paginate($this->Articles);
     }
 
-    $this->set(compact('articles'));
+    $title = 'ブログ一覧';
+
+    $this->set(compact(['articles', 'title']));
   }
 
   /**
@@ -72,9 +83,9 @@ class ArticlesController extends AppController
       'contain' => ['Comments', 'Authors', 'LikeUsers']
     ]);
     $c = new Collection($article->likes);
-    $likeList = $c->extract('id')->toList();
+    $likeIds = $c->extract('id')->toList();
     $comment = $this->Articles->Comments->newEntity();
-    $this->set(compact(['connection', 'article', 'likeList', 'comment']));
+    $this->set(compact(['connection', 'article', 'likeIds', 'comment']));
   }
 
   /**

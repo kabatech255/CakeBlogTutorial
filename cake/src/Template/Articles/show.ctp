@@ -12,12 +12,12 @@
 
 <p>
 <?php
-$action = in_array($this->Auth->user('id'), $likeList) ? 'dislike' : 'like';
+$action = in_array($this->Auth->user('id'), $likeIds) ? 'dislike' : 'like';
 echo $this->Form->postLink('いいね',
   ['action' => $action, $article->id],
   [
     'data' => [
-      'likes._ids' => $likeList
+      'likes._ids' => $likeIds
     ]
   ]
 )
