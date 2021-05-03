@@ -19,7 +19,7 @@ class UsersController extends AppController
 {
   public function isAuthorized($user)
   {
-    if (in_array($this->request->getParam('action'), ['follow', 'unfollow'])) {
+    if (in_array($this->request->getParam('action'), ['edit', 'follow', 'unfollow'])) {
       return true;
     }
 
@@ -114,24 +114,18 @@ class UsersController extends AppController
       $saveDir = "users/{$this->Auth->user('id')}";
       $data['file_name'] = $this->getSavePath($data['file_name']['name']);
       $deletePath = $this->Auth->user('file_name') !== null
-        && $this->getExtension($this->Auth->user('file_name')) !== $this->getExtension($data['file_name'])
+        && $this->getExtension($this->Auth->user('file_name')) !== $this->getExtension((string)$data['file_name'])
         ? $this->Auth->user('file_name') : '';
       $user = $this->Users->patchEntity($user, $data);
 
       if ($this->Users->save($user)) {
         $this->Auth->setUser($user);
-        $dir = new Folder('/var/www/cake/src');
-        if (!$dir->cd('storage')) {
-          $dir->create('storage');
-          $dir->cd('storage');
-        }
-        $dir->create($saveDir);
-        $savePath = $dir->path . DS . $data['file_name'];
-        move_uploaded_file($fileSource, $savePath);
+        $this->putTmpFile($fileSource, $saveDir, $data['file_name']);
+        $s3Controller = new S3Controller();
+        $s3Controller->upload($this->Auth->user('file_name'));
+        $this->deleteTmpFile(STORAGE_PATH, $this->Auth->user('file_name'));
         if (!empty($deletePath)) {
-          $f = new File($dir->path . DS . $deletePath);
-          $f->delete($dir->path . DS . $deletePath);
-          $f->close();
+          $result = $s3Controller->delete($deletePath);
         }
         $this->Flash->success(__('The user has been saved.'));
         return $this->redirect(['action' => 'edit']);
@@ -139,6 +133,25 @@ class UsersController extends AppController
       $this->Flash->error(__('The user could not be saved. Please, try again.'));
     }
     $this->set(compact('user'));
+  }
+
+  protected function putTmpFile($fileSource, $saveDir, $fileName)
+  {
+    $dir = new Folder(STORAGE_PATH);
+    $dir->create($saveDir);
+    $savePath = $dir->path . DS . $fileName;
+    move_uploaded_file($fileSource, $savePath);
+  }
+
+  /**
+   * @param string $tmpDir
+   * @param string $deletePath
+   */
+  protected function deleteTmpFile(string $tmpDir, string $deletePath)
+  {
+    $f = new File($tmpDir . DS . $deletePath);
+    $f->delete($tmpDir . DS . $deletePath);
+    $f->close();
   }
 
   /**
