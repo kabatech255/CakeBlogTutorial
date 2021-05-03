@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Collection\Collection;
 use Cake\Event\Event;
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 
 /**
  * Users Controller
@@ -98,21 +100,41 @@ class UsersController extends AppController
   /**
    * Edit method
    *
-   * @param string|null $id User id.
    * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
    * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
    */
-  public function edit($id = null)
+  public function edit()
   {
-    $user = $this->Users->get($id, [
+    $user = $this->Users->get($this->Auth->user('id'), [
       'contain' => [],
     ]);
     if ($this->request->is(['patch', 'post', 'put'])) {
-      $user = $this->Users->patchEntity($user, $this->request->getData());
-      if ($this->Users->save($user)) {
-        $this->Flash->success(__('The user has been saved.'));
+      $data = $this->request->getData();
+      $fileSource = $data['file_name']['tmp_name'];
+      $saveDir = "users/{$this->Auth->user('id')}";
+      $data['file_name'] = $this->getSavePath($data['file_name']['name']);
+      $deletePath = $this->Auth->user('file_name') !== null
+        && $this->getExtension($this->Auth->user('file_name')) !== $this->getExtension($data['file_name'])
+        ? $this->Auth->user('file_name') : '';
+      $user = $this->Users->patchEntity($user, $data);
 
-        return $this->redirect(['action' => 'index']);
+      if ($this->Users->save($user)) {
+        $this->Auth->setUser($user);
+        $dir = new Folder('/var/www/cake/src');
+        if (!$dir->cd('storage')) {
+          $dir->create('storage');
+          $dir->cd('storage');
+        }
+        $dir->create($saveDir);
+        $savePath = $dir->path . DS . $data['file_name'];
+        move_uploaded_file($fileSource, $savePath);
+        if (!empty($deletePath)) {
+          $f = new File($dir->path . DS . $deletePath);
+          $f->delete($dir->path . DS . $deletePath);
+          $f->close();
+        }
+        $this->Flash->success(__('The user has been saved.'));
+        return $this->redirect(['action' => 'edit']);
       }
       $this->Flash->error(__('The user could not be saved. Please, try again.'));
     }
@@ -183,5 +205,23 @@ class UsersController extends AppController
       }
       return $this->redirect(['action' => 'show', $user->id]);
     }
+  }
+
+  /**
+   * @param string $originalName
+   * @return string
+   */
+  protected function getSavePath(string $originalName): string
+  {
+    $fileName = "user_thumbnail_{$this->Auth->user('id')}";
+    $extension = $this->getExtension($originalName);
+    $fileName .= $extension;
+    $saveDir = "users/{$this->Auth->user('id')}";
+    return $saveDir . DS . $fileName;
+  }
+
+  protected function getExtension(string $filePath)
+  {
+    return mb_substr($filePath, mb_strrpos($filePath, '.'));
   }
 }

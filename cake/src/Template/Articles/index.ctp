@@ -59,3 +59,20 @@
     </tr>
   <?php endforeach; ?>
 </table>
+
+<div class="paginator">
+    <ul class="pagination">
+        <?= $this->Paginator->first(' << first ') ?>
+        <?= $this->Paginator->prev(' < prev ') ?>
+        <?= $this->Paginator->next(' next > ') ?>
+        <?= $this->Paginator->last(' last >>') ?>
+    </ul>
+</div>
+
+<?php $this->start('pageScript'); ?>
+<script>
+  $(function () {
+    console.log($('footer'))
+  })
+</script>
+<?php $this->end(); ?>
