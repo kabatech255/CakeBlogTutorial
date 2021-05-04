@@ -5,21 +5,16 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Category Entity
+ * Tag Entity
  *
  * @property int $id
- * @property int $parent_id
- * @property int $lft
  * @property string $name
- * @property string $description
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\ParentCategory $parent_category
  * @property \App\Model\Entity\Article[] $articles
- * @property \App\Model\Entity\ChildCategory[] $child_categories
  */
-class Category extends Entity
+class Tag extends Entity
 {
   /**
    * Fields that can be mass assigned using newEntity() or patchEntity().

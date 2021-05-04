@@ -135,25 +135,6 @@ class UsersController extends AppController
     $this->set(compact('user'));
   }
 
-  protected function putTmpFile($fileSource, $saveDir, $fileName)
-  {
-    $dir = new Folder(STORAGE_PATH);
-    $dir->create($saveDir);
-    $savePath = $dir->path . DS . $fileName;
-    move_uploaded_file($fileSource, $savePath);
-  }
-
-  /**
-   * @param string $tmpDir
-   * @param string $deletePath
-   */
-  protected function deleteTmpFile(string $tmpDir, string $deletePath)
-  {
-    $f = new File($tmpDir . DS . $deletePath);
-    $f->delete($tmpDir . DS . $deletePath);
-    $f->close();
-  }
-
   /**
    * Delete method
    *
@@ -236,5 +217,29 @@ class UsersController extends AppController
   protected function getExtension(string $filePath)
   {
     return mb_substr($filePath, mb_strrpos($filePath, '.'));
+  }
+
+  /**
+   * @param $fileSource
+   * @param $saveDir
+   * @param $fileName
+   */
+  protected function putTmpFile($fileSource, $saveDir, $fileName)
+  {
+    $dir = new Folder(STORAGE_PATH);
+    $dir->create($saveDir);
+    $savePath = $dir->path . DS . $fileName;
+    move_uploaded_file($fileSource, $savePath);
+  }
+
+  /**
+   * @param string $tmpDir
+   * @param string $deletePath
+   */
+  protected function deleteTmpFile(string $tmpDir, string $deletePath)
+  {
+    $f = new File($tmpDir . DS . $deletePath);
+    $f->delete($tmpDir . DS . $deletePath);
+    $f->close();
   }
 }

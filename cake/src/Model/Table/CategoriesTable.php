@@ -73,15 +73,9 @@ class CategoriesTable extends Table
 
     $validator
       ->scalar('name')
-      ->maxLength('name', 10)
+      ->maxLength('name', 30)
       ->requirePresence('name', 'create')
       ->notEmptyString('name');
-
-    $validator
-      ->scalar('description')
-      ->maxLength('description', 255)
-      ->requirePresence('description', 'create')
-      ->notEmptyString('description');
 
     return $validator;
   }
@@ -95,7 +89,7 @@ class CategoriesTable extends Table
    */
   public function buildRules(RulesChecker $rules)
   {
-    $rules->add($rules->existsIn(['parent_id'], 'ParentCategories'));
+//    $rules->add($rules->existsIn(['parent_id'], 'ParentCategories'));
 
     return $rules;
   }

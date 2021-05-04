@@ -1,90 +1,12 @@
-.disabled a,
-a.disabled {
-  pointer-events: none;
-}
-
-a:hover {
-  color: #15848F;
-}
-
-a {
-  color: #1798A5;
-}
-
-.side-nav li a:not(.button) {
-  color: #15848F;
-}
-
-.side-nav li a:not(.button):hover {
-  color: #15848F;
-}
-
 header {
-  background-color: #D33C44;
-  color: #ffffff;
-  font-size: 30px;
-  height: 84px;
-  line-height: 64px;
-  padding: 16px 0px;
-  box-shadow: 0px 1px rgba(0, 0, 0, 0.24);
+  padding: 1px 0 0;
 }
-
-header .header-title {
-  padding-left: 80px
+.navbar-light {
+  background-color: #D33C44;
 }
 
 legend {
   color: #15848F;
-}
-
-.row {
-  max-width: 80rem;
-}
-
-.actions.columns {
-  margin-top: 1rem;
-  border-left: 5px solid #15848F;
-  padding-left: 15px;
-  padding: 32px 20px;
-}
-
-.actions.columns h3 {
-  color: #15848F;
-}
-
-.related table {
-  border: 0;
-  width: 100%;
-  table-layout: fixed;
-}
-
-.index table thead {
-  height: 3.5rem;
-}
-
-.header-help {
-  float: right;
-  margin-right: 2rem;
-  margin-top: -80px;
-  font-size: 16px;
-}
-
-.header-help span {
-  font-weight: normal;
-  text-align: center;
-  text-decoration: none;
-  line-height: 1;
-  white-space: nowrap;
-  display: inline-block;
-  padding: 0.25rem 0.5rem 0.375rem;
-  font-size: 0.8rem;
-  background-color: #0097a7;
-  color: #FFF;
-  border-radius: 1000px;
-}
-
-.header-help a {
-  color: #fff;
 }
 
 ul.pagination li a {
@@ -401,21 +323,6 @@ fieldset legend {
   line-height: 2rem;
 }
 
-.form button[type="submit"] {
-  float: right;
-  text-transform: uppercase;
-  box-shadow: none;
-}
-
-.form button:hover, .form button:focus {
-  background: #BE840B;
-  box-shadow: none;
-}
-
-button {
-  background: #966600;
-}
-
 div.message {
   text-align: center;
   cursor: pointer;
@@ -537,4 +444,10 @@ table td {
 }
 table th.short {
   width: 65px;
+}
+
+.form {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }

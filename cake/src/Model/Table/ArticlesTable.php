@@ -49,6 +49,12 @@ class ArticlesTable extends Table
       'foreignKey' => 'article_id',
     ]);
 
+    $this->belongsToMany('Tags', [
+      'foreignKey' => 'article_id',
+      'targetForeignKey' => 'tag_id',
+      'joinTable' => 'articles_tags',
+    ])->setProperty('tags');
+
     $this->belongsToMany('LikeUsers', [
       'className' => 'Users',
       'joinTable' => 'likes',
@@ -118,11 +124,11 @@ class ArticlesTable extends Table
    * @param array $options
    * @return Query
    */
-  public function findCategory(Query $query, array $options)
+  public function findTag(Query $query, array $options)
   {
-    $categoryId = $options['categoryId'];
-    return $this->find()->matching('Categories', function($q) use ($categoryId) {
-      return $q->where([ 'Categories.id' => $categoryId ]);
+    $tagId = $options['tagId'];
+    return $this->find()->matching('Tags', function($q) use ($tagId) {
+      return $q->where([ 'Tags.id' => $tagId ]);
     });
   }
 
