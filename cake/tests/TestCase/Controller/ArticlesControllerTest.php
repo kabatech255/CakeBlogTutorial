@@ -21,7 +21,7 @@ class ArticlesControllerTest extends TestCase
      */
     public $fixtures = [
         'app.Articles',
-        'app.Categories',
+        'app.Tags',
     ];
 
     /**

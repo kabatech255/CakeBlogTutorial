@@ -1,0 +1,28 @@
+.card {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.card-text {
+  color: #aaaaaa;
+  font-size: 80%;
+  height: 65px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+header .navbar-light .navbar-nav .nav-link {
+  color: #ffffff;
+}
+
+.navbar-light {
+  color: #ffffff;
+}
+a {
+  transition: .2s;
+}
+a:hover {
+  color: inherit;
+}

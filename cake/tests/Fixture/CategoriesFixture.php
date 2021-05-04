@@ -42,11 +42,7 @@ class CategoriesFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'parent_id' => 1,
-                'lft' => 1,
-                'rght' => 1,
                 'name' => 'Lorem ip',
-                'description' => 'Lorem ipsum dolor sit amet',
                 'created' => '2021-04-25 10:59:46',
                 'modified' => '2021-04-25 10:59:46',
             ],

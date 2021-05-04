@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
 use Cake\Collection\Collection;
+use Cake\ORM\TableRegistry;
 
 /**
  * Articles Controller
@@ -38,7 +39,7 @@ class ArticlesController extends AppController
       'order' => [
         'id' => 'DESC'
       ],
-      'contain' => ['Categories', 'LikeUsers', 'Authors'],
+      'contain' => ['Tags', 'LikeUsers', 'Authors'],
     ];
   }
 
@@ -49,16 +50,16 @@ class ArticlesController extends AppController
    */
   public function index()
   {
-    if($categoryId = (int)$this->request->getQuery('category')){
-      // クエリパラメータ"category"がある場合
-      $query = $this->Articles->find('category', [
-        'categoryId' => $categoryId
+    if($tagId = (int)$this->request->getQuery('tag')){
+      // クエリパラメータ"tag"がある場合
+      $query = $this->Articles->find('tag', [
+        'tagId' => $tagId
       ]);
       $articles = $this->paginate($query);
-      $category = $this->loadModel('Categories')->get($categoryId);
-      $this->set(compact('category'));
+      $tag = $this->loadModel('Tags')->get($tagId);
+      $this->set(compact('tag'));
     } else {
-      // クエリパラメータ"category"がない場合
+      // クエリパラメータ"tag"がない場合
       $articles = $this->paginate($this->Articles);
     }
 
@@ -98,20 +99,22 @@ class ArticlesController extends AppController
     $article = $this->Articles->newEntity();
     if ($this->request->is('post')) {
       $data = $this->request->getData();
-      $article = $this->Articles->patchEntity($article, $data);
+      $data['tags'] = empty($data['tags']) ? [] : $this->makeTagArr($data['tags']);
+      $article = $this->Articles->patchEntity($article, $data, [
+        'associated' => ['Tags']
+      ]);
       // ↑の1行は、以下のようにも書ける
       //$newData = ['user_id' => $this->Auth->user('id')];
       //$article = $this->Articles->patchEntity($article, $newData);
       if ($this->Articles->save($article)) {
-        $this->Flash->success(__('The article has been saved.'));
+        $this->Flash->success(__('記事を投稿しました。'));
         return $this->redirect(['action' => 'index']);
       } else {
-        $this->Flash->error(__('The article could not be saved. Please, try again.'));
+        $this->Flash->error(__('投稿に失敗しました'));
       }
     }
     $article = $this->Articles->newEntity();
-    $categories = $this->Articles->Categories->find('treeList');
-    $this->set(compact(['article', 'categories']));
+    $this->set(compact(['article']));
   }
 
   /**
@@ -124,19 +127,27 @@ class ArticlesController extends AppController
   public function edit($id = null)
   {
     $article = $this->Articles->get($id, [
-      'contain' => ['Categories'],
+      'contain' => ['Tags'],
     ]);
     if ($this->request->is(['patch', 'post', 'put'])) {
-      $article = $this->Articles->patchEntity($article, $this->request->getData());
+      $data = $this->request->getData();
+      $data['tags'] = empty($data['tags']) ? [] : $this->makeTagArr($data['tags']);
+      $article = $this->Articles->patchEntity($article, $data, [
+        'associated' => ['Tags']
+      ]);
       if ($this->Articles->save($article)) {
-        $this->Flash->success(__('The article has been saved.'));
+        $this->Flash->success(__('記事を更新しました'));
 
         return $this->redirect(['action' => 'index']);
       }
       $this->Flash->error(__('The article could not be saved. Please, try again.'));
     }
-    $categories = $this->Articles->Categories->find('treeList');
-    $this->set(compact(['article', 'categories']));
+    $c = new Collection($article->tags);
+    $tagsArr = $c->extract(function($tag){
+      return "#{$tag->name}";
+    })->toList();
+    $tags = implode(' ', $tagsArr);
+    $this->set(compact(['article', 'tags']));
   }
 
   /**
@@ -162,7 +173,7 @@ class ArticlesController extends AppController
   public function like($id = null)
   {
     $article = $this->Articles->get($id, [
-      'contain' => ['Categories', 'LikeUsers'],
+      'contain' => ['Tags', 'LikeUsers'],
     ]);
     if ($this->request->is(['patch', 'post', 'put'])) {
       $data = $this->request->getData();
@@ -183,7 +194,7 @@ class ArticlesController extends AppController
   public function dislike($id = null)
   {
     $article = $this->Articles->get($id, [
-      'contain' => ['Categories', 'LikeUsers'],
+      'contain' => ['Tags', 'LikeUsers'],
     ]);
     if ($this->request->is(['patch', 'post', 'put'])) {
 
@@ -201,5 +212,21 @@ class ArticlesController extends AppController
       }
       return $this->redirect(['action' => 'show', $article->id]);
     }
+  }
+
+  protected function makeTagArr($tagsStr)
+  {
+    $tags = explode('#', preg_replace('/( |　)/', '', $tagsStr ));
+    array_splice($tags, 0, 1);
+    $tagsTable = TableRegistry::getTableLocator()->get('Tags');
+    $arr = [];
+    foreach($tags as $tag) {
+      if (!empty($row = $tagsTable->findByName($tag)->first() ?? '')) {
+        array_push($arr, ['id' => $row->id]);
+      } else {
+        array_push($arr, ['name' => $tag]);
+      }
+    }
+    return $arr;
   }
 }

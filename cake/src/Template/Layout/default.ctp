@@ -23,7 +23,10 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 ]);
 ?>
 <body>
-<?= $this->element('header'); ?>
+<header>
+  <?= $this->element('header-nav'); ?>
+<!--  --><?//= $this->element('jumbotron');?>
+</header>
 <div class="container clearfix">
   <?= $this->fetch('content') ?>
 </div>
