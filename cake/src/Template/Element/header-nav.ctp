@@ -27,7 +27,7 @@
           <li class="nav-item">
             <?= $this->Html->link(
               $this->Auth->user('username'),
-              ['url' => '/'],
+              ['controller' => 'users', 'action' => 'show', $this->Auth->user('id')],
               ['class' => 'nav-link']
             );
             ?>

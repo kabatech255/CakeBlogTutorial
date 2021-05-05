@@ -132,4 +132,14 @@ class ArticlesTable extends Table
     });
   }
 
+  /**
+   * @param Query $query
+   * @param array $options
+   * @return Query
+   */
+  public function findAuthor(Query $query, array $options)
+  {
+    return $query->where(['user_id' => $options['userId']]);
+  }
+
 }

@@ -32,6 +32,17 @@ class UsersController extends AppController
     $this->Auth->allow(['register', 'logout']);
   }
 
+  public function initialize()
+  {
+    parent::initialize();
+    $this->paginate = [
+      'limit' => 5,
+      'order' => [
+        'id' => 'DESC'
+      ],
+    ];
+  }
+
   public function login()
   {
     if ($this->request->is('post')) {
@@ -92,10 +103,31 @@ class UsersController extends AppController
     $user = $this->Users->get($id, [
       'contain' => ['FollowMembers', 'FollowerMembers'],
     ]);
+    $articleTable = $this->loadModel('Articles')->find('author', [
+      'userId' => $user->id
+    ]);
     $c = new Collection($user->followers);
     $followerIds = $c->extract('id')->toList();
-    $this->set(compact(['user', 'followerIds']));
+
+    // クエリパラメータ"tag"がある場合
+    if($tagId = (int)$this->request->getQuery('tag')){
+      $query = $articleTable->find('tag', [
+        'tagId' => $tagId
+      ]);
+      $articles = $this->paginate($query, [
+        'contain' => ['Tags', 'Authors'],
+      ]);
+      $tag = $this->loadModel('Tags')->get($tagId);
+      $this->set(compact('tag'));
+    } else {
+      // クエリパラメータ"tag"がない場合
+      $articles = $this->paginate($articleTable,  [
+        'contain' => ['Tags', 'Authors'],
+      ]);
+    }
+    $this->set(compact(['user', 'followerIds', 'articles']));
   }
+
 
   /**
    * Edit method
@@ -133,6 +165,33 @@ class UsersController extends AppController
       $this->Flash->error(__('The user could not be saved. Please, try again.'));
     }
     $this->set(compact('user'));
+  }
+
+  /**
+   * Follow method
+   * @param null $id
+   */
+  public function following($id = null)
+  {
+    $associates = [
+      [
+        'label' => 'フォロー',
+        'value' => 'follows',
+      ],
+      [
+        'label' => 'フォロワー',
+        'value' => 'followers',
+      ],
+    ];
+    $prevIndex = ($this->request->getQuery('relation') ?? 'follows') === 'follows' ? 0 : 1;
+    $prev = array_splice($associates, $prevIndex, 1);
+    $associates = array_merge($prev, $associates);
+    $user = $this->Users->get($id, [
+      'contain' => ['FollowMembers', 'FollowerMembers'],
+    ]);
+    $currentAssociate = $associates[0]['value'];
+    $rows = $user->$currentAssociate;
+    $this->set(compact(['rows', 'user', 'associates']));
   }
 
   /**
@@ -205,7 +264,7 @@ class UsersController extends AppController
    * @param string $originalName
    * @return string
    */
-  protected function getSavePath(string $originalName): string
+  protected function getSavePath(string $originalName)
   {
     $fileName = "user_thumbnail_{$this->Auth->user('id')}";
     $extension = $this->getExtension($originalName);

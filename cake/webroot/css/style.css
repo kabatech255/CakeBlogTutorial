@@ -451,3 +451,74 @@ table th.short {
   max-width: 600px;
   margin: 0 auto;
 }
+
+.article-detail-box,
+.user-detail-box
+{
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.user-following-box {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.article-detail-box-body {
+  line-height: 2;
+}
+
+.like-btn {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: #ff7f92;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+}
+
+.user-chip-icon {
+  flex-shrink: 0;
+  display: inline-block;
+  background-color: #cccccc;
+  width: 35px;
+  height: 35px;
+  border-radius: 9999px;
+  background-size: cover;
+  background-position: center;
+}
+
+.user-chip-icon.--lg {
+  width: 90px;
+  height: 90px;
+}
+
+.user-chip-link {
+  transition: .3s;
+  color: #757575;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+.user-chip-link:hover {
+  text-decoration: underline;
+  opacity: 0.4;
+}
+
+.icon-btn {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+}
+
+.pagination li {
+  padding: 10px;
+}
