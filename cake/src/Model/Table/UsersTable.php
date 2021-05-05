@@ -52,6 +52,10 @@ class UsersTable extends Table
       'foreignKey' => 'follower_id',
       'targetForeignKey' => 'follow_id',
     ])->setProperty('followers');
+
+    $this->hasMany('Articles', [
+      'foreignKey' => 'user_id'
+    ]);
   }
 
   /**

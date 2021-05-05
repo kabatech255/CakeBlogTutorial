@@ -1,12 +1,14 @@
 .card {
-  max-width: 600px;
   margin: 0 auto;
+}
+
+.card.card-bar {
+  max-width: initial;
 }
 
 .card-text {
   color: #aaaaaa;
   font-size: 80%;
-  height: 65px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -14,15 +16,26 @@
 }
 
 header .navbar-light .navbar-nav .nav-link {
-  color: #ffffff;
+  color: #fefefe;
 }
 
 .navbar-light {
-  color: #ffffff;
+  color: #fefefe;
+}
+.navbar-light .navbar-toggler {
+  color: #fefefe;
 }
 a {
   transition: .2s;
 }
 a:hover {
   color: inherit;
+}
+
+.bottom-50p {
+  bottom: 50px;
+}
+
+.top-60p {
+  top: 60px;
 }

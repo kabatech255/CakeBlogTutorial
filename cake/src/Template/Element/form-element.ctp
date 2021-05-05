@@ -14,15 +14,15 @@
         <li><?= $this->Form->error('tags'); ?></li>
       <?php endif;?>
     </ul>
-    <div class="form-outline input text mb-4">
+    <div class="form-outline input text mb-5">
       <input type="text" name="title" id="title" value="<?= $this->request->getData('title') ?? ($article->title ?? ''); ?>" class="form-control" />
       <label class="form-label" for="title">タイトル</label>
     </div>
-    <div class="form-outline mb-4">
+    <div class="form-outline mb-5">
       <textarea class="form-control" name="body" id="body" rows="10"><?= nl2br($this->request->getData('body') ?? ($article->body ?? '')); ?></textarea>
       <label class="form-label" for="body">本文</label>
     </div>
-    <div class="form-outline mb-4">
+    <div class="form-outline mb-5">
       <input type="text" name="tags" id="tags" value="<?= $this->request->getData('tags') ?? ($tags ?? ''); ?>" class="form-control" placeholder="例）#PHP #JavaScript #M1チップ" />
       <label class="form-label" for="tags">タグ</label>
     </div>

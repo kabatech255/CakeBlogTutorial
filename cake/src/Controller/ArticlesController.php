@@ -81,7 +81,7 @@ class ArticlesController extends AppController
 //    ConnectionManager::config('default', ['url' => $dsn]);
     $connection = ConnectionManager::get('default');
     $article = $this->Articles->get($id, [
-      'contain' => ['Comments', 'Authors', 'LikeUsers']
+      'contain' => ['Comments.Users', 'Tags', 'Authors', 'LikeUsers']
     ]);
     $c = new Collection($article->likes);
     $likeIds = $c->extract('id')->toList();
@@ -138,7 +138,7 @@ class ArticlesController extends AppController
       if ($this->Articles->save($article)) {
         $this->Flash->success(__('記事を更新しました'));
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(str_replace('/index.php', '/', $this->referer(null, true)));
       }
       $this->Flash->error(__('The article could not be saved. Please, try again.'));
     }
@@ -167,7 +167,7 @@ class ArticlesController extends AppController
       $this->Flash->error(__('The article could not be deleted. Please, try again.'));
     }
 
-    return $this->redirect(['action' => 'index']);
+    return $this->redirect(str_replace('/index.php', '', $this->referer()));
   }
 
   public function like($id = null)

@@ -1,4 +1,3 @@
-<!-- Footer -->
 <footer class="bg-dark text-center text-white">
   <!-- Grid container -->
   <div class="container p-4">
