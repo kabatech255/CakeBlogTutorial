@@ -522,3 +522,7 @@ table th.short {
 .pagination li {
   padding: 10px;
 }
+
+.comment-item:not(:first-of-type) {
+  margin-top: 15px;
+}

@@ -54,16 +54,7 @@
     <ul class="d-flex justify-content-start flex-wrap mt-4">
       <?php foreach($article->tags as $tag): ?>
         <li class="p-1">
-          <?= $this->Html->link(
-            $tag->name,
-            [ 'action' => 'index',
-              '?' => [
-                'tag' => $tag->id
-              ],
-            ],
-            [ 'class' => 'badge rounded-pill bg-warning']
-          );
-          ?>
+          <span class="custom-badge outlined-warning"><?= $tag->name; ?></span>
         </li>
       <?php endforeach; ?>
     </ul>
@@ -109,9 +100,9 @@
         コメント一覧
       </h3>
       <?php if( count($article->comments) > 0 ): ?>
-        <ul class="">
+        <ul class="comment-list">
           <?php foreach($article->comments as $comment): ?>
-            <li>
+            <li class="comment-item">
               <div class="card p-3">
                 <div class="fw-light">
                   <p><?= $comment->body; ?></p>
@@ -121,9 +112,11 @@
                       'name' => $comment->commentedBy->username,
                       'file_name' => $comment->commentedBy->file_name,
                     ]); ?>
+                    <?php if($comment->commentedBy->id === $this->Auth->user('id')): ?>
                     <span data-comment-id="<?= $comment->id; ?>" class="icon-btn comment-del-icon ripple d-flex justify-content-center align-items-center">
                       <i class="far fa-trash-alt text-black-50"></i>
                     </span>
+                    <?php endif; ?>
                   </div>
                 </div>
               </div>

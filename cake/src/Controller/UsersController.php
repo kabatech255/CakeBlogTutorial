@@ -143,22 +143,22 @@ class UsersController extends AppController
     if ($this->request->is(['patch', 'post', 'put'])) {
       $data = $this->request->getData();
       $fileSource = $data['file_name']['tmp_name'];
+
+      if (empty($fileSource)) {
+        $this->Flash->success(__('The user has been saved.'));
+        return $this->redirect(['action' => 'edit']);
+      }
       $saveDir = "users/{$this->Auth->user('id')}";
       $data['file_name'] = $this->getSavePath($data['file_name']['name']);
-      $deletePath = $this->Auth->user('file_name') !== null
-        && $this->getExtension($this->Auth->user('file_name')) !== $this->getExtension((string)$data['file_name'])
-        ? $this->Auth->user('file_name') : '';
+      $deletePath = $this->Auth->user('file_name') !== null ? $this->Auth->user('file_name') : '';
       $user = $this->Users->patchEntity($user, $data);
-
       if ($this->Users->save($user)) {
         $this->Auth->setUser($user);
         $this->putTmpFile($fileSource, $saveDir, $data['file_name']);
         $s3Controller = new S3Controller();
         $s3Controller->upload($this->Auth->user('file_name'));
         $this->deleteTmpFile(STORAGE_PATH, $this->Auth->user('file_name'));
-        if (!empty($deletePath)) {
-          $result = $s3Controller->delete($deletePath);
-        }
+        $result = !empty($deletePath) ? $s3Controller->delete($deletePath) : '';
         $this->Flash->success(__('The user has been saved.'));
         return $this->redirect(['action' => 'edit']);
       }
@@ -266,7 +266,7 @@ class UsersController extends AppController
    */
   protected function getSavePath(string $originalName)
   {
-    $fileName = "user_thumbnail_{$this->Auth->user('id')}";
+    $fileName = "user_thumbnail_{$this->Auth->user('id')}_{$this->getRandomName()}";
     $extension = $this->getExtension($originalName);
     $fileName .= $extension;
     $saveDir = "users/{$this->Auth->user('id')}";
@@ -276,6 +276,17 @@ class UsersController extends AppController
   protected function getExtension(string $filePath)
   {
     return mb_substr($filePath, mb_strrpos($filePath, '.'));
+  }
+
+  protected function getRandomName($length = 12)
+  {
+    $characters = array_merge(
+      range(0, 9),
+      range('a', 'z'),
+      range('A', 'Z')
+    );
+
+    return substr(str_shuffle(implode('', $characters)), 0, $length);
   }
 
   /**
