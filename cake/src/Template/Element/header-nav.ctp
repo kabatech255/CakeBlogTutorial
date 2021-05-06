@@ -12,7 +12,8 @@
     >
       <i class="fas fa-bars"></i>
     </button>
-    <div class="collapse navbar-collapse" id="navbarExample01">
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item active">
           <a class="nav-link" aria-current="page" href="/">Home</a>
@@ -24,20 +25,38 @@
           <a class="nav-link" target="_blank" href="https://api.cakephp.org/3.0/">API</a>
         </li>
         <?php if (!empty($this->Auth->user('username') ?? '')): ?>
-          <li class="nav-item">
-            <?= $this->Html->link(
-              $this->Auth->user('username'),
-              ['controller' => 'users', 'action' => 'show', $this->Auth->user('id')],
-              ['class' => 'nav-link']
-            );
-            ?>
-          </li>
-          <li class="nav-item">
-            <?= $this->Html->link(
-              'ログアウト',
-              ['controller' => 'users', 'action' => 'logout'],
-              ['class' => 'nav-link']
-            ); ?>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-mdb-toggle="dropdown"
+              aria-expanded="false"
+            ><?= $this->Auth->user('username'); ?></a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li>
+                <?= $this->Html->link(
+                  'マイページ',
+                  ['controller' => 'users', 'action' => 'show', $this->Auth->user('id')],
+                  ['class' => 'dropdown-item']
+                ); ?>
+              </li>
+              <li>
+                <?= $this->Html->link(
+                  'プロフィール',
+                  ['controller' => 'users', 'action' => 'edit', $this->Auth->user('id')],
+                  ['class' => 'dropdown-item']
+                ); ?>
+              </li>
+              <li>
+                <?= $this->Html->link(
+                  'ログアウト',
+                  ['controller' => 'users', 'action' => 'logout'],
+                  ['class' => 'dropdown-item']
+                ); ?>
+              </li>
+            </ul>
           </li>
         <?php else: ?>
           <li class="nav-item">
